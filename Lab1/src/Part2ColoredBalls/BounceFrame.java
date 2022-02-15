@@ -15,7 +15,7 @@ public class BounceFrame extends JFrame {
     public static final int WIDTH = 1450;
     public static final int HEIGHT = 1350;
 
-    private void createBall(Ball ball) {
+    private Thread createBall(Ball ball) {
         canvas.add(ball);
         BallThread thread = new BallThread(ball, () -> {
             canvas.remove(ball);
@@ -26,6 +26,7 @@ public class BounceFrame extends JFrame {
         thread.setPriority(ball.isRed ? Thread.MAX_PRIORITY : Thread.MIN_PRIORITY);
         ballThreads.add(thread);
         System.out.println("Thread    name    =    " + thread.getName() + thread.getPriority());
+        return thread;
     }
 
     private void startAllBalls() {
@@ -48,22 +49,25 @@ public class BounceFrame extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.lightGray);
 
-        var start1BlueBallsJoinButton = new JButton("1 Blue join");
+        var start2BlueBallsJoinButton = new JButton("2 Blue join");
         var start1RedAnd100BlueBallsButton = new JButton("1 Red And 100 Blue");
         var start1RedAnd4000BlueBallsButton = new JButton("1 Red And 4000 Blue");
         var stopButton = new JButton("Stop");
 
-        start1BlueBallsJoinButton.addActionListener(new ActionListener() {
+        start2BlueBallsJoinButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 new Thread(() -> {
-                    createBall(new Ball(canvas, false));
-                    ballThreads.get(0).start();
+                    var thread1 = createBall(new Ball(canvas, false));
+                    var thread2 = createBall(new Ball(canvas, false));
                     try {
-                        ballThreads.get(0).join();
+                        thread1.start();
+                        thread1.join();
+
+                        thread2.start();
+                        thread2.join();
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
-                    ballThreads.clear();
                 }).start();
             }
         });
@@ -94,7 +98,7 @@ public class BounceFrame extends JFrame {
             }
         });
 
-        buttonPanel.add(start1BlueBallsJoinButton);
+        buttonPanel.add(start2BlueBallsJoinButton);
         buttonPanel.add(start1RedAnd100BlueBallsButton);
         buttonPanel.add(start1RedAnd4000BlueBallsButton);
 
