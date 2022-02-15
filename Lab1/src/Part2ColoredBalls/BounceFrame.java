@@ -48,35 +48,23 @@ public class BounceFrame extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.lightGray);
 
-        var start1RedBallJoinButton = new JButton("1 Red Join");
         var start1BlueBallsJoinButton = new JButton("1 Blue join");
         var start1RedAnd100BlueBallsButton = new JButton("1 Red And 100 Blue");
         var start1RedAnd4000BlueBallsButton = new JButton("1 Red And 4000 Blue");
         var stopButton = new JButton("Stop");
 
-        start1RedBallJoinButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createBall(new Ball(canvas, true));
-                ballThreads.get(0).start();
-                try {
-                    ballThreads.get(0).join();
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                ballThreads.clear();
-            }
-        });
-
         start1BlueBallsJoinButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                createBall(new Ball(canvas, false));
-                ballThreads.get(0).start();
-                try {
-                    ballThreads.get(0).join();
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                ballThreads.clear();
+                new Thread(() -> {
+                    createBall(new Ball(canvas, false));
+                    ballThreads.get(0).start();
+                    try {
+                        ballThreads.get(0).join();
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    ballThreads.clear();
+                }).start();
             }
         });
 
@@ -106,7 +94,6 @@ public class BounceFrame extends JFrame {
             }
         });
 
-        buttonPanel.add(start1RedBallJoinButton);
         buttonPanel.add(start1BlueBallsJoinButton);
         buttonPanel.add(start1RedAnd100BlueBallsButton);
         buttonPanel.add(start1RedAnd4000BlueBallsButton);
