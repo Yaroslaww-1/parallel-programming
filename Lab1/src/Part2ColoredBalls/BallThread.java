@@ -6,6 +6,7 @@ public class BallThread extends Thread {
     private Ball ball;
     private boolean isRunning;
     private final Callable onThreadStop;
+    private BallThread secondaryThread;
 
     public BallThread(Ball ball, Callable onThreadStop) {
         this.ball = ball;
@@ -13,12 +14,18 @@ public class BallThread extends Thread {
         this.onThreadStop = onThreadStop;
     }
 
+    public void setSecondaryThread(BallThread secondaryThread) {
+        this.secondaryThread = secondaryThread;
+    }
+
     public void run() {
         try {
-//            Thread.currentThread().setPriority(ball.isRed ? Thread.MAX_PRIORITY : Thread.MIN_PRIORITY);
-
             for (int i = 1; i < 10000; i++) {
                 ball.move();
+
+                if (secondaryThread != null) {
+                    secondaryThread.join();
+                }
 
 //                System.out.println("Thread name = " + Thread.currentThread().getName() + " " + Thread.currentThread().getPriority());
                 Thread.sleep(5);

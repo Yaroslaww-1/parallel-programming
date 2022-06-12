@@ -15,7 +15,7 @@ public class BounceFrame extends JFrame {
     public static final int WIDTH = 1450;
     public static final int HEIGHT = 1350;
 
-    private Thread createBall(Ball ball) {
+    private BallThread createBall(Ball ball) {
         canvas.add(ball);
         BallThread thread = new BallThread(ball, () -> {
             canvas.remove(ball);
@@ -61,10 +61,9 @@ public class BounceFrame extends JFrame {
                     var thread2 = createBall(new Ball(canvas, false));
                     try {
                         thread1.start();
-                        thread1.join();
-
                         thread2.start();
-                        thread2.join();
+                        thread1.setSecondaryThread(thread2);
+                        thread1.join();
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -84,10 +83,10 @@ public class BounceFrame extends JFrame {
 
         start1RedAnd4000BlueBallsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                createBall(new Ball(canvas, true));
                 for (int i = 0; i < 4000; i++) {
                     createBall(new Ball(canvas, false));
                 }
+                createBall(new Ball(canvas, true));
                 startAllBalls();
             }
         });
